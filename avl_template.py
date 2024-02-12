@@ -214,35 +214,42 @@ class AVLTree(object):
 
 
 	def rebalancing(self, parent):
+		cnt = 0
 		while parent != None:
 			bf = parent.get_BF()
 			heightBefore = parent.get_height()
 			heightAfter = parent.calculate_height()
 			if abs(bf) < 2:
 				if heightBefore == heightAfter:
-					return 0
+					return cnt
 				else:
 					parent.set_height(heightAfter)
 					parent = parent.get_parent()
+					cnt += 1
+
 			else:
 				if bf == 2:
 					left_child = parent.get_left()
 					if left_child.get_BF() != -1:
 						self.right_rotation(left_child, parent)
-						return 1
+						cnt += 1
+						return cnt
 					else:
 						self.left_rotation(left_child.get_right(), left_child)
 						self.right_rotation(parent.get_left(), parent)
-						return 2
+						cnt += 2
+						return cnt
 				else:
 					right_child = parent.get_right()
 					if right_child.get_BF() != 1:
 						self.left_rotation(right_child, parent)
-						return 1
+						cnt += 1
+						return cnt
 					else:
 						self.right_rotation(right_child.get_left(), right_child)
 						self.left_rotation(parent.get_right(), parent)
-						return 2
+						cnt += 2
+						return cnt
 
 
 					
