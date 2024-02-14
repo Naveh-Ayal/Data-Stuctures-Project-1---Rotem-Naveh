@@ -267,7 +267,15 @@ class AVLTree(object):
 			A.get_parent.set_right(A)
 		B.set_parent(A)
 
+		newHeightB = B.calculate_height
+		if B.get_height() != B.calculate_height:
+			B.set_height(newHeightB)
+		
+		newHeightA = A.calculate_height
+		if A.get_height() != A.calculate_height:
+			A.set_height(newHeightA)
 
+		
 
 	def left_rotation(self, A, B):
 		B.set_right(A.get_left)
@@ -279,22 +287,15 @@ class AVLTree(object):
 		else:
 			A.get_parent.set_right(A)
 		B.set_parent(A)
-		
-		newHeightA = A.calculate_height
-		if A.get_height() != A.calculate_height:
-			A.set_height(newHeightA)
-
+		#calculate new hieghts if necessarry - bottom up (B then A)
 		newHeightB = B.calculate_height
 		if B.get_height() != B.calculate_height:
 			B.set_height(newHeightB)
+			
+		newHeightA = A.calculate_height
+		if A.get_height() != A.calculate_height:
+			A.set_height(newHeightA)
 				
-
-			
-			
-
-
-
-	
 	
 	def insertBST(self, node):
 		if self.root == None:
@@ -322,9 +323,6 @@ class AVLTree(object):
 
 
 
-
-
-
 	"""deletes node from the dictionary
 
 	@type node: AVLNode
@@ -333,7 +331,97 @@ class AVLTree(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 	def delete(self, node):
-		return -1
+		parent = self.deleteBST(node)
+		balanceOps = 0
+		while parent != None:
+			balanceOps += self.rebalancing(parent)
+			parent = parent.get_parent()
+		return balanceOps
+
+		
+	def deleteBST(self, node):
+		node_is_left = node.is_left_child() # check if node is left child (if not - then right child)
+		finalParent = node.get_parent()
+
+		if node.get_height == 0:
+			# simply remove leaf and pointers to and from it
+			# check if leaf is left or right child
+			if node_is_left():
+				node.get_parent().set_left(None)
+				node.set_parent(None)
+			else:
+				node.get_parent().set_right(None)
+				node.set_parent(None)
+		
+		# node has only left child
+		elif node.get_left() != None and node.get_right() == None:
+			if node_is_left:
+				node.get_left().set_parent(node.get_parent())
+				node.get_parent().set_left(node.get_left())
+			else: # is right child
+				node.get_left().set_parent(node.get_parent())
+				node.get_parent().set_right(node.get_left())
+
+			node.set_left(None)
+			node.set_parent(None)
+			return finalParent
+		
+		# node has only right child
+		elif node.get_left == None and node.get_right != None:
+			if node_is_left:
+				node.get_right.set_parent(node.get_parent())
+				node.get_parent.set_left(node.get_right())
+			else: # is right child
+				node.get_right.set_parent(node.get_parent())
+				node.get_parent.set_right(node.get_right())
+
+			node.set_right(None)
+			node.set_parent(None)
+			return finalParent
+		
+		# node has 2 children
+		else: 
+			sucsessor = self.successor(node)
+			finalParent = successor.get_parent()
+			self.deleteBST(successor)
+
+			#connect succesort to node posision
+			successor.set_right(node.get_right())
+			node.get_right().set_parent(sucsessor)
+
+			successor.set_left(node.get_left())
+			node.get_left().set_parent(sucsessor)
+		
+			successor.set_parent(node.get_parent())
+			if node_is_left:
+				sucsessor.get_parent().set_left(sucsessor)
+			else:
+				sucsessor.get_parent().set_right(sucsessor)
+
+			#delete old node
+			node.set_left(None)
+			node.set_right(None)
+			node.set_parent(None)
+
+		#returns the parent of the physically deleted node (parent of leaf or successor)
+		return finalParent			
+
+		
+	def successor(self, node):
+		x = node.get_right
+		if x != None:
+			# go as much left as possible
+			while x.get_left != None:
+				x = x.get_left
+			return x
+		else: # go up left and stop on the first right or at root
+			y = x.get_parent
+			while y != None and x == y.get_right:
+				x = y
+				y = x.get_parent
+			return y
+			
+		
 
 
 	"""returns an array representing dictionary 
