@@ -2,7 +2,7 @@ import unittest
 
 #import pytest
 
-from AVLTtree import AVLNode, AVLTree
+from avl_template import AVLNode, AVLTree
 
 AVLNode.__eq__ = lambda self, other: self.key == other.key and self.value == other.value
 
