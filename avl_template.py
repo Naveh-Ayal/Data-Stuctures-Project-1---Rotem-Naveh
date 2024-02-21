@@ -246,7 +246,7 @@ class AVLTree(object):
 		if key == None: # key of virtual node
 			return None
 		node = self.root
-		while node.key != None:
+		while node.get_key() != None:
 			if node.get_key() == key: # found
 				return node
 			elif key < node.get_key(): # go left
@@ -417,9 +417,9 @@ class AVLTree(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 	def delete(self, node):
-		parent = self.deleteBST(node)
+		parent = self.deleteBST(node) # deletes node and returns parent of deleted node
 		balanceOps = 0
-		balanceOps += self.rebalancing(parent, "delete")
+		balanceOps += self.rebalancing(parent, "delete") # maintains AVL, returns num actions
 		self.size -= 1
 		return balanceOps
 
@@ -429,17 +429,17 @@ class AVLTree(object):
 		is_root = (node.get_parent() == None)
 		finalParent = node.get_parent()
 
-		if node.get_height == 0:
+		if node.get_height() == 0:
 			# simply remove leaf and pointers to and from it
-			# check if leaf is left or right child
-			if node_is_left():
-				node.get_parent().set_left(None)
+			# check if leaf is left or right child and add virtual child accordingly
+			if node_is_left:
+				node.get_parent().set_left(AVLNode(None, None))
 				node.set_parent(None)
 			else:
 				if is_root: # tree has only root
 					self.root = None
 				else:
-					node.get_parent().set_right(None)
+					node.get_parent().set_right(AVLNode(None, None))
 					node.set_parent(None)
 		
 		# node has only left child
@@ -462,9 +462,9 @@ class AVLTree(object):
 			if is_root: # node is root
 				self.root = node.get_right()			
 			elif node_is_left:
-				node.get_parent.set_left(node.get_right())
+				node.get_parent().set_left(node.get_right())
 			else: # is right child
-				node.get_parent.set_right(node.get_right())
+				node.get_parent().set_right(node.get_right())
 
 			node.get_right().set_parent(node.get_parent())
 
@@ -487,8 +487,8 @@ class AVLTree(object):
 		
 			suc.set_parent(node.get_parent())
 			if is_root:
-				self.root = node
-			if node_is_left:
+				self.root = suc#######
+			elif node_is_left:
 				suc.get_parent().set_left(suc)
 			else:
 				suc.get_parent().set_right(suc)
@@ -526,12 +526,12 @@ class AVLTree(object):
 		stack = []
 		sortedArray = []
 		curr = self.root
-		while curr.is_real_node() or stack.length == 0:
+		while curr.is_real_node() or len(stack) != 0:
 			while curr.is_real_node():
 				stack.append(curr)
 				curr = curr.get_left()
 			curr = stack.pop() # pops minimum in stack
-			sortedArray.append[(curr.get_key, curr.get_value)]
+			sortedArray.append((curr.get_key(), curr.get_value()))
 			curr = curr.get_right()
 		return sortedArray
 
@@ -557,25 +557,49 @@ class AVLTree(object):
 		# what happens if one of node's children is virtual???
 		# initiate left and right trees with elft and right children of node as root
 		left = AVLTree()
-		left.root = node.get_left()
+		if  node.get_left().is_real_node():
+			left.root = node.get_left()
+		#else: left stays empty
 		right = AVLTree()
-		right.root = node.get_right()
-
-		currNode = node
-		while currNode.get_parent() != None:
-			x = currNode.get_parent
-			if currNode.is_left_child():
+		if  node.get_right().is_real_node():
+			right.root = node.get_right()
+		#else: right stays empty
+		
+		if node == self.root:
+			return [left, right]
+		
+		#else: node is not root
+		grandpa = node.get_parent() # pointer for grandpa of currnode in original tree
+		parent = node.get_parent()
+		parent_is_left = parent.is_left_child()
+		child = node
+		child_is_left = child.is_left_child()
+		while parent != None:
+			if child_is_left:
 				newRight = AVLTree()
-				newRight.root = x.get_right()
-				right.join(newRight, x.get_key(), x.get_value())
-				currNode = right.root # we assume that the parent of the new root is still the original parent
+				if parent.get_right().is_real_node():
+					newRight.root = parent.get_right()
+					newRight.root.set_parent(None)
+				# if parent.right is vitual node - newLeft stays empty
+				right.join(newRight, parent.get_key(), parent.get_value())
 				# right is the corret pointer for right tree
 			else: #currNode is right child - we need to join new subtree to left
+				#DO THE GRANDPA TO THE LEFT
 				newLeft = AVLTree()
-				newLeft.root = x.get_left()
-				newLeft.join(left, x.get_key(), x.get_value())
-				left = newLeft
-				currNode = left.root
+				if parent.get_left().is_real_node():
+					newLeft.root = parent.get_left()
+					newLeft.root.set_parent(None)
+				# if parent.left is vitual node - newLeft stays empty
+				newLeft.join(left, parent.get_key(), parent.get_value())
+				left = newLeft ### do we need to change root and size?
+
+			# move up the original tree
+			child_is_left = parent_is_left
+			parent = grandpa
+			if parent != None:
+				parent_is_left = grandpa.is_left_child()
+				grandpa = grandpa.get_parent()
+		
 
 		return [left, right]
 
@@ -594,12 +618,36 @@ class AVLTree(object):
 	"""
 	def join(self, tree2, key, val):
 		x = AVLNode(key, val)
+		# empty tree cases
+		if self.root == None or tree2.root == None:
+			if self.root != None:
+				h = self.root.calculate_height() + 1
+				self.insert(x.get_key(),x.get_value())
+			elif tree2.root != None:
+				h = tree2.root.calaculate_height() + 1
+				tree2.insert(x.get_key(),x.get_value())
+				self.root = tree2.root
+			else:
+				h = 0
+				self.insert(x.get_key(),x.get_value()) # inserts x as root with 2 virtual sons
+
+			# update size of self
+			self.size += tree2.size
+			return h + 1
+		
+		
 		h1 = self.root.get_height()
 		h2 = tree2.root.get_height()
 		# joining the 2 trees makes legal AVL Tree
 		if abs(h1 - h2) <= 1:
 			a = self.root
 			b = tree2.root
+			x.set_right(b)
+			x.set_left(a)
+			a.set_parent(x)
+			b.set_parent(x)
+			self.root = x
+			self.root.set_height(self.root.calculate_height())
 			c = None
 		
 		else:
@@ -610,7 +658,7 @@ class AVLTree(object):
 				x.set_left(a)
 
 				curr = tree2.root
-				while curr.get_height >= h1 + 1:
+				while curr.get_height() >= h1 + 1:
 					curr = curr.get_left()
 
 				b = curr
@@ -620,6 +668,7 @@ class AVLTree(object):
 				x.set_right(b)
 				# update root of joined tree
 				self.root = tree2.root
+				self.root.set_parent(None)###########
 
 			# self is bigger than tree2
 			else:
@@ -628,7 +677,7 @@ class AVLTree(object):
 				x.set_right(b)
 
 				curr = self.root
-				while curr.get_height >= h2 + 1:
+				while curr.get_height() >= h2 + 1:
 					curr = curr.get_right()
 
 				a = curr
@@ -637,13 +686,12 @@ class AVLTree(object):
 				c.set_right(x)
 				x.set_left(a)
 				# root doesn't change
+			# rebalnce if needed
+			self.rebalancing(c, "join")
 
 		# update size of self
 		self.size += tree2.size + 1
-
-		# rebalnce if needed
-		self.rebalancing(c, "join")
-
+		
 		return abs(h1 - h2) + 1
 
 

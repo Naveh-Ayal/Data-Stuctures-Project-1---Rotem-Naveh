@@ -81,6 +81,7 @@ class tests:
                                                  10, 
                                                  10,
                                                  2)
+        
         for tree in tree_tuple:
             #  tests for trees [4, 2, 5] and [20, 22, 16, 18, 14]
             #  balancing should be called on node c and node x
@@ -184,7 +185,6 @@ class testHelper:
     def test_deletion(tree, deletion_key, num_balancing_actions):
         deletion_node = tree.search(deletion_key)
         check_balancing_actions = tree.delete(deletion_node)
-
         assert tree.search(deletion_key) is None, \
             f"Deleting {deletion_key}, searching for deleted key did not return None"
         assert check_balancing_actions == num_balancing_actions, \
@@ -229,8 +229,8 @@ class testHelper:
         tree1_flip_order = AVLTree()
         tree2_flip_order = AVLTree()
 
-        testHelper.insert_array(tree1_flip_order, key_array2)
-        testHelper.insert_array(tree2_flip_order, key_array1)
+        testHelper.insert_array(tree1_flip_order, key_array1)
+        testHelper.insert_array(tree2_flip_order, key_array2)
         
         actualDiff = tree1_flip_order.join(tree2_flip_order, joiningNodeKey, joiningNodeValue)
         assert actualDiff == expectedDiff, \
@@ -269,3 +269,6 @@ class testHelper:
         return node
     
 tests.testInsertDelete()
+tests.test_avl_to_array()
+tests.test_join()
+tests.test_split()
