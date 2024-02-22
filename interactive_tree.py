@@ -768,9 +768,18 @@ if __name__ == "__main__":
 print(generate_avl_trees())
 
 def test():
-	ramd = True
+	rand = []
+	mid = []
 	trees = generate_avl_trees()
-	for tree in trees:
-		
-        tree.split
+	for i in range(0, trees.len, 2):
+		array= trees[i].avl_to_array
+		key = random.choice(array)
+		randnode = trees[i].search(key[0])
+		midnode = trees[i].successor(trees[i].get_root())
+        rand+= trees[i].split(randnode)
+		mid += trees[i+1].split(midnode)
+	return "rand="+ rand +"mid=" mid
+
+
+print(test())
 	
