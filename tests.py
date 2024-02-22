@@ -160,8 +160,8 @@ class testHelper:
 
         # We should test for `node is None` in case the search fails
         if node is not None:
-            node_right_key = node.get_right().get_key()
-            node_left_key = node.get_left().get_key()
+            node_right_key = node.get_right_child().get_key()
+            node_left_key = node.get_left_child().get_key()
             # We should always be able to get a node's right/left children's keys because search always returns real nodes, or None
         else:
             raise ValueError(f"assert_neighbors was called to check neighbors for node with key {node_key} but search couldn't find a node with that key.")
