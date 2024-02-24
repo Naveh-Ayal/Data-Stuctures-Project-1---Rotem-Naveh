@@ -1,8 +1,11 @@
-#username - RotemNaveh
-#id1      - 211698824
-#name1    - Rotem Kerem
-#id2      - 209207638
-#name2    - Naveh Ayal 
+
+#id1       - 211698824
+#name1     - Rotem Kerem
+#username1 - Rotemkerem
+
+#id2       - 209207638
+#name2     - Naveh Ayal 
+#username2 - Navehayal
 
 
 """A class represnting a node in an AVL tree"""
@@ -29,19 +32,9 @@ class AVLNode(object):
 	@returns: the left child of self, None if there is no left child (if self is virtual)
 	"""
 	def get_left(self):
-		if self.left.is_real_node():
-			return self.left
-		return None
-	
-	"""returns the left child  (used instead of get_right for virtual nodes)
-
-	@rtype: AVLNode
-	@returns: the left child of self, wheather real or virtual
-	"""
-	
-	def get_left_child(self):
 		return self.left
-
+	
+	
 
 	"""returns the right child
 
@@ -49,18 +42,9 @@ class AVLNode(object):
 	@returns: the right child of self, None if there is no right child (if self is virtual)
 	"""
 	def get_right(self):
-		if self.right.is_real_node():
-			return self.right
-		return None
-
-	"""returns the right child (used instead of get_right for virtual nodes)
-
-	@rtype: AVLNode
-	@returns: the right child of self, wheather real or virtual
-	"""
-	
-	def get_right_child(self):
 		return self.right
+
+	
 	
 	"""returns the parent 
 
@@ -229,9 +213,9 @@ class AVLTree(object):
 			if node.get_key() == key: # found
 				return node
 			elif key < node.get_key(): # go left
-				node = node.get_left_child()
+				node = node.get_left()
 			else: # go right
-				node = node.get_right_child()
+				node = node.get_right()
 		# if loop finished - key wasn't found in tree
 		return None
 	
@@ -292,9 +276,9 @@ class AVLTree(object):
 			while currNode.is_real_node(): #binary search
 				parent = currNode
 				if key < currNode.get_key(): # go left
-					currNode = currNode.get_left_child()
+					currNode = currNode.get_left()
 				else: # go right
-					currNode = currNode.get_right_child()	
+					currNode = currNode.get_right()	
 					
 			# we updated the parent - now insert node as child
 			node.set_parent(parent)
@@ -336,13 +320,13 @@ class AVLTree(object):
 
 			else:
 				if bf == 2:
-					left_child = node.get_left_child()
+					left_child = node.get_left()
 					if left_child.get_BF() != -1:
 						self.right_rotation(left_child, node)
 						cnt += 1
 					else:
-						self.left_rotation(left_child.get_right_child(), left_child)
-						self.right_rotation(node.get_left_child(), node)
+						self.left_rotation(left_child.get_right(), left_child)
+						self.right_rotation(node.get_left(), node)
 						cnt += 2
 
 					# check which case we are in
@@ -352,7 +336,7 @@ class AVLTree(object):
 						node = node.get_parent()	
 
 				else: # BF == -2
-					right_child = node.get_right_child()
+					right_child = node.get_right()
 					if right_child.get_BF() != 1:
 						self.left_rotation(right_child, node)
 						cnt += 1
@@ -363,8 +347,8 @@ class AVLTree(object):
 							node = node.get_parent()
 
 					else:
-						self.right_rotation(right_child.get_left_child(), right_child)
-						self.left_rotation(node.get_right_child(), node)
+						self.right_rotation(right_child.get_left(), right_child)
+						self.left_rotation(node.get_right(), node)
 						cnt += 2
 						# check which case we are in
 						if case == "insert" or case == "join":
@@ -386,8 +370,8 @@ class AVLTree(object):
 	
 	def right_rotation(self, A, B):
 		# switching A with B:
-		B.set_left(A.get_right_child())
-		B.get_left_child().set_parent(B)
+		B.set_left(A.get_right())
+		B.get_left().set_parent(B)
 		A.set_right(B)
 		A.set_parent(B.get_parent())
 		#connect up the tree:
@@ -419,8 +403,8 @@ class AVLTree(object):
 
 	def left_rotation(self, A, B):
 		# switching a with b:
-		B.set_right(A.get_left_child())
-		B.get_right_child().set_parent(B)
+		B.set_right(A.get_left())
+		B.get_right().set_parent(B)
 		A.set_left(B)
 		A.set_parent(B.get_parent())
 		#connect up the tree:
@@ -482,31 +466,31 @@ class AVLTree(object):
 					node.set_parent(None)
 		
 		# node has only left child
-		elif node.get_left_child().get_key() != None and node.get_right_child().get_key() == None:
+		elif node.get_left().get_key() != None and node.get_right().get_key() == None:
 			if is_root: # node is root
-				self.root = node.get_left_child()
+				self.root = node.get_left()
 			elif node_is_left:
-				node.get_parent().set_left(node.get_left_child())
+				node.get_parent().set_left(node.get_left())
 			else: # is right child
-				node.get_parent().set_right(node.get_left_child())
+				node.get_parent().set_right(node.get_left())
 			
-			node.get_left_child().set_parent(node.get_parent())
+			node.get_left().set_parent(node.get_parent())
 
 			node.set_left(None)
 			node.set_parent(None)
 			return finalParent
 		
 		# node has only right child
-		elif node.get_left_child().get_key() == None and node.get_right_child().get_key() != None:
+		elif node.get_left().get_key() == None and node.get_right().get_key() != None:
 
 			if is_root: # node is root
-				self.root = node.get_right_child()			
+				self.root = node.get_right()			
 			elif node_is_left:
-				node.get_parent().set_left(node.get_right_child())
+				node.get_parent().set_left(node.get_right())
 			else: # is right child
-				node.get_parent().set_right(node.get_right_child())
+				node.get_parent().set_right(node.get_right())
 			
-			node.get_right_child().set_parent(node.get_parent())
+			node.get_right().set_parent(node.get_parent())
 
 			#delete all connections of the node
 			node.set_right(None)
@@ -520,11 +504,11 @@ class AVLTree(object):
 			self.deleteBST(suc) # delete successor
 
 			#connect succesor to node posision (replacing the node)
-			suc.set_right(node.get_right_child())
-			node.get_right_child().set_parent(suc)
+			suc.set_right(node.get_right())
+			node.get_right().set_parent(suc)
 
-			suc.set_left(node.get_left_child())
-			node.get_left_child().set_parent(suc)
+			suc.set_left(node.get_left())
+			node.get_left().set_parent(suc)
 		
 			suc.set_parent(node.get_parent())
 			
@@ -552,15 +536,15 @@ class AVLTree(object):
 	"""		
 
 	def successor(self, node):
-		x = node.get_right_child()
+		x = node.get_right()
 		if x.is_real_node(): # if node have right child
 			# go as much left as possible
-			while x.get_left_child().is_real_node():
-				x = x.get_left_child()
+			while x.get_left().is_real_node():
+				x = x.get_left()
 			return x
 		else: # go up left and stop on the first right or at root
 			y = x.get_parent()
-			while y != None and x == y.get_right_child():
+			while y != None and x == y.get_right():
 				x = y
 				y = x.get_parent()
 			return y
@@ -578,10 +562,10 @@ class AVLTree(object):
 		while curr.is_real_node() or len(stack) != 0:
 			while curr.is_real_node(): #we can go down
 				stack.append(curr) #remember where we have been
-				curr = curr.get_left_child()
+				curr = curr.get_left()
 			curr = stack.pop() # pops minimum in stack
 			sortedArray.append((curr.get_key(), curr.get_value()))
-			curr = curr.get_right_child() #continue going down if possible (real node), if not, continue poping (resemble going up)
+			curr = curr.get_right() #continue going down if possible (real node), if not, continue poping (resemble going up)
 		return sortedArray
 
 	"""returns the number of items in dictionary 
@@ -606,12 +590,12 @@ class AVLTree(object):
 		# initiate left and right trees
 		# left and right children of node as roots
 		left = AVLTree()
-		if  node.get_left_child().is_real_node(): # if node has smaller child
-			left.root = node.get_left_child()
+		if  node.get_left().is_real_node(): # if node has smaller child
+			left.root = node.get_left()
 		#else: left stays empty
 		right = AVLTree()
-		if  node.get_right_child().is_real_node():#if node has larger child
-			right.root = node.get_right_child()
+		if  node.get_right().is_real_node():#if node has larger child
+			right.root = node.get_right()
 		#else: right stays empty
 		
 		if node == self.root: #no spliting to do
@@ -626,8 +610,8 @@ class AVLTree(object):
 		while parent != None: #not at the root (the end)
 			if child_is_left:
 				newRight = AVLTree()
-				if parent.get_right_child().is_real_node(): #if parent has larger children
-					newRight.root = parent.get_right_child()
+				if parent.get_right().is_real_node(): #if parent has larger children
+					newRight.root = parent.get_right()
 					newRight.root.set_parent(None) # cutting the new tree from original 
 				# if parent.right is vitual node - newLeft stays empty
 
@@ -636,8 +620,8 @@ class AVLTree(object):
 
 			else: #currNode is right child - we need to join new subtree to left
 				newLeft = AVLTree()
-				if parent.get_left_child().is_real_node():#if parent has smaller children
-					newLeft.root = parent.get_left_child()
+				if parent.get_left().is_real_node():#if parent has smaller children
+					newLeft.root = parent.get_left()
 					newLeft.root.set_parent(None) # cutting the new tree from original 
 				# if parent.left is virtual node - newLeft stays empty
 
@@ -718,7 +702,7 @@ class AVLTree(object):
 				# travel down tree2 to find root of new subtree
 				curr = tree2.root
 				while curr.get_height() >= h1 + 1: #go left
-					curr = curr.get_left_child()
+					curr = curr.get_left()
 
 				# update pointers
 				b = curr
@@ -740,7 +724,7 @@ class AVLTree(object):
 				# travel down self to find root of new subtree
 				curr = self.root
 				while curr.get_height() >= h2 + 1:
-					curr = curr.get_right_child()
+					curr = curr.get_right()
 
 				# update pointers
 				a = curr

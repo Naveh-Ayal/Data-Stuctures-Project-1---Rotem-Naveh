@@ -3,7 +3,7 @@ import random
 import bisect
 from pathlib import Path
 
-###from tqdm import tqdm
+from tqdm import tqdm
 
 from avl_template import AVLTree
 
