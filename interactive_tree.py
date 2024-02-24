@@ -158,7 +158,7 @@ class AVLNode(object):
 		hRight = self.right.height #height of right child
 		return max(hLeft, hRight) + 1
 	
-	
+
 	"""calculates the Balance Factor of node"""
 	def get_BF(self):
 		return self.left.height - self.right.height 
@@ -581,7 +581,7 @@ class AVLTree(object):
 	dictionary smaller than node.key, right is an AVLTree representing the keys in the 
 	dictionary larger than node.key.
 	"""
-	def split(self, node):
+	def split_for_theory(self, node):
 		# what happens if one of node's children is virtual???
 		# initiate left and right trees with elft and right children of node as root
 		cnt = 0
@@ -640,7 +640,7 @@ class AVLTree(object):
 				grandpa = grandpa.get_parent()
 		
 
-		return [cnt/times, max]
+		return ["mean:" + str(cnt/times),"max:" + str(max)]
 
 	
 	"""joins self with key and another AVLTree
@@ -663,7 +663,7 @@ class AVLTree(object):
 				h = self.root.calculate_height() + 1
 				self.insert(x.get_key(),x.get_value())
 			elif tree2.root != None:
-				h = tree2.root.calaculate_height() + 1
+				h = tree2.root.calculate_height() + 1
 				tree2.insert(x.get_key(),x.get_value())
 				self.root = tree2.root
 			else:
@@ -738,7 +738,7 @@ class AVLTree(object):
 
 	@rtype: AVLNode
 	@returns: the root, None if the dictionary is empty
-	"""
+
 def generate_avl_tree(keys):
     tree = AVLTree()
     for key in keys:
@@ -752,6 +752,8 @@ def generate_random_keys(n):
 
 def generate_avl_trees():
     avl_trees = []
+    rand = []
+    mid = []
     for i in range(1, 11):
         n = 1000 * (2 ** i)
         keys = generate_random_keys(n)
@@ -759,27 +761,29 @@ def generate_avl_trees():
         copy_tree = generate_avl_tree(keys)  # Create a copy of the tree
         avl_trees.append(tree)
         avl_trees.append(copy_tree)
+		
+		
     return avl_trees
 
 if __name__ == "__main__":
     avl_trees_list = generate_avl_trees()
-    print("Number of AVL trees in the list:", len(avl_trees_list))
+    
 
-print(generate_avl_trees())
+
 
 def test():
 	rand = []
 	mid = []
 	trees = generate_avl_trees()
-	for i in range(0, trees.len, 2):
+	for i in range(0, trees.len(), 2):
 		array= trees[i].avl_to_array
 		key = random.choice(array)
 		randnode = trees[i].search(key[0])
 		midnode = trees[i].successor(trees[i].get_root())
-        rand+= trees[i].split(randnode)
+		rand += trees[i].split(randnode)
 		mid += trees[i+1].split(midnode)
-	return "rand="+ rand +"mid=" mid
+	return "rand="+ rand + "/n" + "mid=" + mid
 
 
-print(test())
+print(test())"""
 	
